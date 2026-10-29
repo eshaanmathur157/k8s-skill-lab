@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: too-big
+spec:
+  containers:
+    - name: big
+      image: busybox:1.36
+      imagePullPolicy: IfNotPresent
+      command: ["sleep", "36000"]
+      resources:
+        requests:
+          # No node in this cluster has 50 CPUs.
+          cpu: "50"

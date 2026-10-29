@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spotify-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: spotify-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: spotify-api
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: spotify-api
+      volumes:
+        - name: config-files
+          configMap:
+            name: spotify-config
+      containers:
+        - name: api
+          image: spotify-api:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 5
+          env:
+            - name: GREETING
+              valueFrom:
+                configMapKeyRef:
+                  name: spotify-config
+                  key: GREETING
+            - name: REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: spotify-config
+                  key: REGION
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: spotify-secret
+                  key: API_KEY
+          volumeMounts:
+            - name: config-files
+              mountPath: /config

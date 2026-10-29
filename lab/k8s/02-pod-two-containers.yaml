@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: two-in-one
+  labels:
+    app: two-in-one
+spec:
+  # Always place this pod on lab-worker, so we know where to look later.
+  nodeSelector:
+    kubernetes.io/hostname: lab-worker
+  volumes:
+    - name: shared
+      emptyDir: {}
+  containers:
+    - name: api
+      image: spotify-api:v1
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 5000
+      volumeMounts:
+        - name: shared
+          mountPath: /shared
+    - name: helper
+      image: busybox:1.36
+      imagePullPolicy: IfNotPresent
+      command: ["sleep", "36000"]
+      volumeMounts:
+        - name: shared
+          mountPath: /shared

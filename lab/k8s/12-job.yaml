@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migration
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: python:3.12-slim
+          imagePullPolicy: IfNotPresent
+          command:
+            - python
+            - -c
+            - |
+              import time
+              print("Connecting to the songs database...")
+              time.sleep(3)
+              print("Adding column 'genre' to table 'songs'...")
+              time.sleep(3)
+              print("Migration finished")

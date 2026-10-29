@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: spotify-rs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: spotify-rs
+  template:
+    metadata:
+      labels:
+        app: spotify-rs
+    spec:
+      containers:
+        - name: api
+          image: spotify-api:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000

@@ -1,0 +1,2 @@
+# Keep Linux line endings on every OS; the scripts run inside Linux containers.
+* text=auto eol=lf

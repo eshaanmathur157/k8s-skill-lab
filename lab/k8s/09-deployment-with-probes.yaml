@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spotify-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: spotify-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: spotify-api
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: spotify-api
+      # Move pods off a dead node after 20 seconds instead of the default 5 minutes.
+      tolerations:
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 20
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 20
+      volumes:
+        - name: config-files
+          configMap:
+            name: spotify-config
+      containers:
+        - name: api
+          image: spotify-api:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 5
+          env:
+            - name: GREETING
+              valueFrom:
+                configMapKeyRef:
+                  name: spotify-config
+                  key: GREETING
+            - name: REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: spotify-config
+                  key: REGION
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: spotify-secret
+                  key: API_KEY
+          volumeMounts:
+            - name: config-files
+              mountPath: /config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 5000
+            periodSeconds: 3
+            failureThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            failureThreshold: 2
