@@ -21,7 +21,7 @@ Type every command exactly as shown. Each step says what you should see and why.
 2. Download the lab image:
 
    ```
-   docker pull eshaanmathur/k8s-skill-lab:1.0
+   docker pull eshaan0/k8s-skill-lab:1.0
    ```
 
 3. Start the lab container:
