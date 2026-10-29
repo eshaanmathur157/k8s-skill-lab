@@ -27,7 +27,7 @@ Type every command exactly as shown. Each step says what you should see and why.
 3. Start the lab container:
 
    ```
-   docker run -d --privileged --name k8s-lab -p 8080:8080 -p 8081:8081 -p 30080:30080 eshaanmathur/k8s-skill-lab:1.0
+   docker run -d --privileged --name k8s-lab -p 8080:8080 -p 8081:8081 -p 30080:30080 eshaan0/k8s-skill-lab:1.0
    ```
 
    `--privileged` is needed because the lab runs its own Docker and its own Kubernetes inside.
