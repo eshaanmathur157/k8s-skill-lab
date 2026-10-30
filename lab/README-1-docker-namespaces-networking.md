@@ -1,7 +1,7 @@
 # Part 1: Processes, Namespaces and Docker Networking
-
+docker pull eshaan0/k8s-skill-lab:1.0
 In this part you will see, step by step:
-
+https://github.com/eshaanmathur157/k8s-skill-lab/edit/master/lab/README-1-docker-namespaces-networking.md
 1. What a process is
 2. How Linux namespaces give a process its own private view
 3. How cgroups limit what a process can use
